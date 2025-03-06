@@ -5,13 +5,13 @@ import (
 	"log"
 	"os"
 
-	"github.com/Anilchoudary-Rugaramji/EZ-Apply/handlers"
+	"github.com/Anilchoudary-Rugaramji/EZ-Apply/internal/handlers"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
 
 func main() {
-	err := godotenv.Load()
+	err := godotenv.Load("../.env")
 	if err != nil {
 		log.Fatal("Error loading .env file", err)
 	}
@@ -19,7 +19,7 @@ func main() {
 	// create a gin router
 	router := gin.Default()
 
-	router.POST("/upload", handlers.UploadResume)
+	router.POST("/upload", handlers.UplaoadResume)
 
 	// start the server
 	port := os.Getenv("PORT")
