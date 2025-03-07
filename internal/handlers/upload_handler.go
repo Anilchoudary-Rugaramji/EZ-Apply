@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -27,6 +28,7 @@ func UplaoadResume(c *gin.Context) {
 	// Upload file to S3
 	fileURL, err := storage.UploadFile(file, fileHeader)
 	if err != nil {
+		fmt.Println("S3 Upload Error:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to upload file"})
 		return
 	}

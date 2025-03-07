@@ -22,11 +22,16 @@ func UploadFile(file multipart.File, fileHeader *multipart.FileHeader) (string, 
 	bucket := os.Getenv("AWS_BUCKET_NAME")
 	region := os.Getenv("AWS_REGION")
 
+	fmt.Println("Bucket:", bucket)
+	fmt.Println("Region:", region)
+	fmt.Println("Access Key:", os.Getenv("AWS_ACCESS_KEY_ID"))
+	fmt.Println("Secret Key:", os.Getenv("AWS_SECRET_KEY"))
+
 	sess, err := session.NewSession(&aws.Config{
 		Region: aws.String(region),
 		Credentials: credentials.NewStaticCredentials(
 			os.Getenv("AWS_ACCESS_KEY_ID"),
-			os.Getenv("AWS_SECRET_ACCESS_KEY"),
+			os.Getenv("AWS_SECRET_KEY"),
 			"",
 		),
 	})
@@ -52,7 +57,6 @@ func UploadFile(file multipart.File, fileHeader *multipart.FileHeader) (string, 
 		Key:         aws.String(fileName),
 		Body:        bytes.NewReader(buffer.Bytes()),
 		ContentType: aws.String(http.DetectContentType(buffer.Bytes())),
-		ACL:         aws.String("public-read"),
 	})
 
 	if err != nil {
