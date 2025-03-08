@@ -25,7 +25,7 @@ func main() {
 	}
 
 	// Migrate the database (ensure tables are created)
-	err = storage.DB.Migrator().MigrateColumn()
+	err = storage.MigrateDB(db)
 	if err != nil {
 		log.Fatal("Error migrating database", err)
 	}
@@ -37,7 +37,7 @@ func main() {
 	// router.Use(cors.Default())
 
 	// Define route and associate it with handler
-	router.POST("/upload", handlers.UploadResume(db))
+	router.POST("/upload", handlers.UploadResume)
 
 	// Start the server
 	port := os.Getenv("PORT")

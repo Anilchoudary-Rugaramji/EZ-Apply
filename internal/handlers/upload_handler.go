@@ -10,7 +10,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-func UplaoadResume(c *gin.Context) {
+func UploadResume(c *gin.Context) {
 
 	// Load environment variables
 	err := godotenv.Load()
