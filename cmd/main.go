@@ -6,22 +6,40 @@ import (
 	"os"
 
 	"github.com/Anilchoudary-Rugaramji/EZ-Apply/internal/handlers"
+	"github.com/Anilchoudary-Rugaramji/EZ-Apply/internal/storage"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
 
 func main() {
+	// Load environment variables from .env file
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file", err)
 	}
 
-	// create a gin router
+	// Connect to the database
+	db, err := storage.ConnectDataBase()
+	if err != nil {
+		log.Fatal("Could not connect to the database", err)
+	}
+
+	// Migrate the database (ensure tables are created)
+	err = storage.DB.Migrator().MigrateColumn()
+	if err != nil {
+		log.Fatal("Error migrating database", err)
+	}
+
+	// Create a Gin router
 	router := gin.Default()
 
-	router.POST("/upload", handlers.UplaoadResume)
+	// Optionally, you can enable CORS middleware if needed
+	// router.Use(cors.Default())
 
-	// start the server
+	// Define route and associate it with handler
+	router.POST("/upload", handlers.UploadResume(db))
+
+	// Start the server
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
