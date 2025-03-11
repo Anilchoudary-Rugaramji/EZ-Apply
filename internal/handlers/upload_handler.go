@@ -11,12 +11,12 @@ import (
 )
 
 func UploadResume(c *gin.Context) {
-
 	// Load environment variables
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file", err)
 	}
+
 	// Get the uploaded file
 	file, fileHeader, err := c.Request.FormFile("file")
 	if err != nil {
@@ -25,17 +25,18 @@ func UploadResume(c *gin.Context) {
 	}
 	defer file.Close()
 
-	// Upload file to S3
-	fileURL, err := storage.UploadFile(file, fileHeader)
+	// Upload file to S3 and get fileKey
+	fileURL, fileKey, err := storage.UploadFile(file, fileHeader)
 	if err != nil {
 		fmt.Println("S3 Upload Error:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to upload file"})
 		return
 	}
 
-	// Return file URL
+	// Return both file_url and file_key
 	c.JSON(http.StatusOK, gin.H{
 		"message":  "Resume uploaded successfully",
 		"file_url": fileURL,
+		"file_key": fileKey, // ✅ Now returning file_key
 	})
 }

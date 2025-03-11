@@ -9,11 +9,34 @@ import (
 	"github.com/Anilchoudary-Rugaramji/EZ-Apply/internal/storage"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/sts"
 )
 
 func main() {
+
+	sess, err := session.NewSession()
+	if err != nil {
+		log.Fatal("Error creating AWS session:", err)
+	}
+
+	// Create STS client
+	svc := sts.New(sess)
+
+	// Get caller identity
+	result, err := svc.GetCallerIdentity(&sts.GetCallerIdentityInput{})
+	if err != nil {
+		log.Fatal("Error getting caller identity:", err)
+	}
+
+	// Print IAM User / Role
+	fmt.Println("AWS Account ID:", *result.Account)
+	fmt.Println("IAM User or Role ARN:", *result.Arn)
+	fmt.Println("User ID:", *result.UserId)
 	// Load environment variables from .env file
-	err := godotenv.Load()
+
+	err = godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file", err)
 	}
@@ -38,6 +61,7 @@ func main() {
 
 	// Define route and associate it with handler
 	router.POST("/upload", handlers.UploadResume)
+	router.POST("/parse_resume", handlers.ParseResumeHandler)
 
 	// Start the server
 	port := os.Getenv("PORT")
